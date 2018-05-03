@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaomo.travelhelper.mapper.CommentMapper">
+  <resultMap id="BaseResultMap" type="com.xiaomo.travelhelper.pojo.Comment">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="share_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="commentor_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="content" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+  <insert id="insert" parameterType="com.xiaomo.travelhelper.pojo.Comment">
+    insert into th_comment (id, share_id, commentor_id, 
+      content, create_time)
+    values (#{id,jdbcType=INTEGER}, #{shareId,jdbcType=INTEGER}, #{commentorId,jdbcType=VARCHAR},
+      #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xiaomo.travelhelper.pojo.Comment">
+    insert into th_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="shareId != null">
+        share_id,
+      </if>
+      <if test="commentorId != null">
+        commentor_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="true">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="shareId != null">
+        #{shareId,jdbcType=INTEGER},
+      </if>
+      <if test="commentorId != null">
+        #{commentorId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="true">
+        now(),
+      </if>
+    </trim>
+  </insert>
+
+  <sql id="Base_Column_List">
+    commentor_id,content,username
+  </sql>
+
+  <resultMap id="CommentInfoMap" type="com.xiaomo.travelhelper.pojo.dto.CommentInfo">
+  <constructor>
+    <arg column="commentor_id" javaType="java.lang.String" jdbcType="VARCHAR" />
+    <arg column="content" javaType="java.lang.String" jdbcType="VARCHAR" />
+    <arg column="username" javaType="java.lang.String" jdbcType="VARCHAR" />
+  </constructor>
+  </resultMap>
+
+  <select id="listByShareId" parameterType="integer" resultMap="CommentInfoMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM th_comment t,th_user t1 WHERE share_id = #{shareId,jdbcType=INTEGER} AND
+    t.commentor_id = t1.account
+
+  </select>
+
+  <select id="countOfComment" resultType="int">
+    SELECT count(*) FROM th_comment;
+  </select>
+
+  <select id="listCommentDataGroupByMonth" resultType="map">
+    SELECT count(*) AS countNum ,MONTH(create_time) AS  createMonth FROM  th_comment GROUP BY MONTH(create_time) ORDER BY create_time
+  </select>
+
+
+</mapper>

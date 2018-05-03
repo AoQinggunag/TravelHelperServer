@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaomo.travelhelper.mapper.ShareMapper">
+  <resultMap id="BaseResultMap" type="com.xiaomo.travelhelper.pojo.Share">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="account" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="content" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="img_url" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ShareResultMap" type="com.xiaomo.travelhelper.pojo.dto.ShareInfo">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="account" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="content" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="img_url" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="username" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="img" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="area" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <insert id="insert" parameterType="com.xiaomo.travelhelper.pojo.Share">
+    insert into th_share (id, account, content, 
+      img_url, create_time)
+    values (#{id,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{imgUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xiaomo.travelhelper.pojo.Share">
+    insert into th_share
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="imgUrl != null">
+        img_url,
+      </if>
+      <if test="true">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null">
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="true">
+        now(),
+      </if>
+    </trim>
+  </insert>
+
+  <sql id="Base_Column_List">
+    t.id,t.account,t.content,t.img_url,t.create_time,t1.username,t1.img,t1.area
+  </sql>
+
+  <select id="listShares" resultMap="ShareResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    from th_share t ,th_user t1 where t.account = t1.account ORDER BY t.create_time Desc
+  </select>
+
+
+  <select id="listSharesByPage" parameterType="map" resultMap="ShareResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    from th_share t ,th_user t1 where t.account = t1.account ORDER BY t.create_time Desc
+    limit #{startSize,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+
+  <select id="countOfShare" resultType="int">
+    SELECT count(*) FROM th_share;
+  </select>
+
+  <select id="listShareDataGroupMonth" resultType="map">
+    SELECT count(*) AS countNum ,MONTH(create_time) AS  createMonth FROM  th_share GROUP BY MONTH(create_time) ORDER BY create_time
+
+  </select>
+
+</mapper>

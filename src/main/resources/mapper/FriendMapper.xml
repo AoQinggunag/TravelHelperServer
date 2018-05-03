@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaomo.travelhelper.mapper.FriendMapper">
+  <resultMap id="BaseResultMap" type="com.xiaomo.travelhelper.pojo.Friend">
+    <constructor>
+      <arg column="user_account_1" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="user_account_2" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+  <resultMap id="FriendResultMap" type="com.xiaomo.travelhelper.pojo.dto.FriendInfo">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="username" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="account" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="email" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="img" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="area" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <insert id="insert" parameterType="com.xiaomo.travelhelper.pojo.Friend">
+    insert into th_friend (user_account_1, user_account_2, create_time
+      )
+    values (#{userAccount1,jdbcType=VARCHAR}, #{userAccount2,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xiaomo.travelhelper.pojo.Friend">
+    insert into th_friend
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userAccount1 != null">
+        user_account_1,
+      </if>
+      <if test="userAccount2 != null">
+        user_account_2,
+      </if>
+      <if test="true">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userAccount1 != null">
+        #{userAccount1,jdbcType=VARCHAR},
+      </if>
+      <if test="userAccount2 != null">
+        #{userAccount2,jdbcType=VARCHAR},
+      </if>
+      <if test="true">
+        now(),
+      </if>
+    </trim>
+  </insert>
+
+  <sql id="Base_Column_List">
+    id,account,username,email,img,area
+  </sql>
+
+  <select id="listFriends" parameterType="string" resultMap="FriendResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM th_user
+    WHERE account IN
+    (
+      select
+      case
+      when user_account_1 = #{account,jdbcType=VARCHAR} then user_account_2
+      else user_account_1 end as account
+      from th_friend where user_account_1 = #{account,jdbcType=VARCHAR} or user_account_2 = #{account,jdbcType=VARCHAR}
+    )
+  </select>
+
+  <select id="likeByAccountOrUsername" parameterType="map" resultMap="FriendResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM th_user
+    WHERE account like #{account,jdbcType=VARCHAR} or username like #{username,jdbcType=VARCHAR};
+
+  </select>
+
+  <select id="checkPK" parameterType="map" resultType="integer">
+    SELECT COUNT(*) FROM th_friend
+    WHERE
+    (user_account_1 = #{account1,jdbcType=VARCHAR} AND user_account_2 = #{account2,jdbcType=VARCHAR})
+    OR
+    (user_account_1 = #{account2,jdbcType=VARCHAR} AND user_account_2 = #{account1,jdbcType=VARCHAR})
+
+
+  </select>
+
+</mapper>

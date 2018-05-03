@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaomo.travelhelper.mapper.MsgQueueMapper">
+  <resultMap id="BaseResultMap" type="com.xiaomo.travelhelper.pojo.MsgQueue">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="account" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="type" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="val" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="description" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <resultMap id="MsgFriendMap" type="com.xiaomo.travelhelper.pojo.dto.FriendInfo">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="username" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="account" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="email" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="img" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="area" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="description" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <insert id="insert" parameterType="com.xiaomo.travelhelper.pojo.MsgQueue">
+    insert into th_msg_queue (id, account, type, 
+      val, description)
+    values (#{id,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{val,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xiaomo.travelhelper.pojo.MsgQueue">
+    insert into th_msg_queue
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="val != null">
+        val,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="val != null">
+        #{val,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <sql id="Base_Column_List">
+    t2.id,t2.account,t2.username,t2.email,t2.img,t2.area,t1.description
+  </sql>
+  <select id="getMsgFriendByAccount" parameterType="map" resultMap="MsgFriendMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM th_msg_queue t1,th_user t2 WHERE
+    t1.type = #{type,jdbcType=INTEGER} AND t1.account = #{account,jdbcType=VARCHAR} AND t1.val = t2.account
+
+  </select>
+
+  <delete id="deleteByMsgFriend" parameterType="map">
+    DELETE FROM th_msg_queue WHERE
+    type = 1 AND account = #{account,jdbcType=VARCHAR} AND val = #{val,jdbcType=VARCHAR}
+
+  </delete>
+
+
+</mapper>

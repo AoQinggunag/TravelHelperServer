@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>出行助手后台数据管理</title>
+    <script src="/static/js/echarts.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+</head>
+<body>
+<center>
+<!-- 总数据 -->
+<div id="sumData" style="width: 900px;height:400px;"></div>
+<!-- 用户注册折线图-->
+<div id="userTrend" style="width: 900px;height:400px;"></div>
+<!-- 帖子折线图-->
+<div id="shareTrend" style="width: 900px;height:400px;"></div>
+<!-- 评论折线图-->
+<div id="commentTrend" style="width: 900px;height:400px;"></div>
+</center>
+
+
+
+<script type="text/javascript">
+
+    function initSumData() {
+        // 使用刚指定的配置项和数据显示图表。
+        sumDataChart.setOption(sumDataOption);
+        var url = 'http://localhost:8888/api/sys/sum';
+
+        // 异步加载数据
+        sumDataChart.showLoading();
+        $.get(url).done(function (result) {
+            // 填入数据
+            sumDataChart.hideLoading();
+            if(result.success){
+
+                sumDataChart.setOption({
+
+                    series: [{
+                        data: result.data
+                    }]
+                });
+
+            }else{
+                alert(result.msg);
+            }
+
+        });
+
+    }
+
+    function initUserChart() {
+        userChart.setOption(userChartOption);
+        var url = 'http://localhost:8888/api/sys/user';
+
+        // 异步加载数据
+        userChart.showLoading();
+        $.get(url).done(function (result) {
+            // 填入数据
+            userChart.hideLoading();
+            if(result.success){
+
+                userChart.setOption({
+
+                    series: [{
+                        data: result.data
+                    }]
+                });
+
+            }else{
+                alert(result.msg);
+            }
+
+        });
+    }
+
+    function initShareChart() {
+        shareChart.setOption(shareChartOption);
+        var url = 'http://localhost:8888/api/sys/share';
+
+        // 异步加载数据
+        shareChart.showLoading();
+        $.get(url).done(function (result) {
+            // 填入数据
+            shareChart.hideLoading();
+            if(result.success){
+
+                shareChart.setOption({
+
+                    series: [{
+                        data: result.data
+                    }]
+                });
+
+            }else{
+                alert(result.msg);
+            }
+
+        });
+
+    }
+
+    function initCommentChart() {
+        commentChart.setOption(commentChartOption);
+        var url = 'http://localhost:8888/api/sys/comment';
+
+        // 异步加载数据
+        commentChart.showLoading();
+        $.get(url).done(function (result) {
+            // 填入数据
+            commentChart.hideLoading();
+            if(result.success){
+
+                commentChart.setOption({
+
+                    series: [{
+                        data: result.data
+                    }]
+                });
+
+            }else{
+                alert(result.msg);
+            }
+
+        });
+
+    }
+
+    // 基于准备好的dom，初始化echarts实例
+    var sumDataChart = echarts.init(document.getElementById('sumData'));
+    var userChart =  echarts.init(document.getElementById('userTrend'));
+    var shareChart =  echarts.init(document.getElementById('shareTrend'));
+    var commentChart =  echarts.init(document.getElementById('commentTrend'));
+
+    // 指定图表的配置项和数据
+    var sumDataOption = {
+        title: {
+            text: '用户-帖子-评论统计'
+        },
+        tooltip: {},
+        legend: {
+            data:['数量']
+        },
+        xAxis: {
+            data: ["用户","帖子","评论"]
+        },
+        yAxis: {},
+        series: [{
+            name: '数量',
+            type: 'bar',
+            data: [0, 0, 0]
+        }]
+    };
+
+    var userChartOption = {
+        title: {
+            text: '用户注册时间分布折线图'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月','八月','九月','十月','十一月','十二月']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: [820, 932, 901, 934, 1290, 1330, 1320,120,342,543,452,324],
+            type: 'line'
+        }]
+    };
+
+    var shareChartOption = {
+        title: {
+            text: '用户发帖时间分布折线图'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月','八月','九月','十月','十一月','十二月']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: [820, 932, 901, 934, 1290, 1330, 1320,120,342,543,452,324],
+            type: 'line'
+        }]
+    };
+
+    var commentChartOption = {
+        title: {
+            text: '用户评论时间分布折线图'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月','八月','九月','十月','十一月','十二月']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: [820, 932, 901, 934, 1290, 1330, 1320,120,342,543,452,324],
+            type: 'line'
+        }]
+    };
+
+
+   initSumData();
+   initUserChart();
+   initShareChart();
+   initCommentChart();
+
+
+</script>
+</body>
+</html>
